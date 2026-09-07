@@ -1,0 +1,824 @@
+
+/* =====================================
+   RESET
+===================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: #f5efe6;
+
+    color: #3e352d;
+
+    min-height: 100vh;
+
+    overflow-x: hidden;
+
+}
+
+
+a {
+    text-decoration: none;
+}
+
+
+/* =====================================
+   HEADER
+===================================== */
+
+.header {
+
+    height: 80px;
+
+    padding: 0 7%;
+
+    background: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border-bottom: 1px solid #eee5d9;
+
+    position: relative;
+
+    z-index: 10;
+
+}
+
+
+/* LOGO */
+
+.logo {
+
+    font-size: 28px;
+
+    font-weight: bold;
+
+    color: #3e352d;
+
+}
+
+
+.logo span {
+
+    color: #b99467;
+
+}
+
+
+/* BACK */
+
+.back-home {
+
+    font-size: 14px;
+
+    color: #817468;
+
+}
+
+
+.back-home b {
+
+    color: #b99467;
+
+    margin-left: 5px;
+
+}
+
+
+/* =====================================
+   MÁY BAY
+===================================== */
+
+.paper-plane {
+
+    position: absolute;
+
+    width: 150px;
+
+    height: 100px;
+
+    right: 7%;
+
+    top: 120px;
+
+    animation: fly 4s ease-in-out infinite;
+
+    z-index: 2;
+
+    pointer-events: none;
+
+}
+
+
+.plane-body {
+
+    position: absolute;
+
+    width: 0;
+
+    height: 0;
+
+    border-left: 110px solid white;
+
+    border-top: 38px solid transparent;
+
+    border-bottom: 38px solid transparent;
+
+    filter: drop-shadow(
+        0 10px 10px
+        rgba(50, 40, 30, 0.15)
+    );
+
+}
+
+
+.plane-wing {
+
+    position: absolute;
+
+    left: 35px;
+
+    top: 38px;
+
+    width: 0;
+
+    height: 0;
+
+    border-left: 70px solid #d5c1a5;
+
+    border-top: 8px solid transparent;
+
+    border-bottom: 38px solid transparent;
+
+}
+
+
+@keyframes fly {
+
+    0% {
+
+        transform:
+            translate(0, 0)
+            rotate(-10deg);
+
+    }
+
+    50% {
+
+        transform:
+            translate(-20px, -15px)
+            rotate(-3deg);
+
+    }
+
+    100% {
+
+        transform:
+            translate(0, 0)
+            rotate(-10deg);
+
+    }
+
+}
+
+
+/* =====================================
+   AUTH CONTAINER
+===================================== */
+
+.auth-container {
+
+    min-height: calc(100vh - 140px);
+
+    padding: 70px 8%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 80px;
+
+}
+
+
+/* =====================================
+   INTRO LOGIN
+===================================== */
+
+.auth-intro {
+
+    width: 50%;
+
+}
+
+
+.small-title {
+
+    color: #b99467;
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.auth-intro h1 {
+
+    font-family: Georgia, serif;
+
+    font-size: 58px;
+
+    line-height: 1.1;
+
+    font-weight: normal;
+
+}
+
+
+.auth-intro h1 span {
+
+    color: #b99467;
+
+    font-style: italic;
+
+}
+
+
+.intro-text {
+
+    max-width: 520px;
+
+    margin-top: 30px;
+
+    color: #75695e;
+
+    line-height: 1.8;
+
+    font-size: 16px;
+
+}
+
+
+/* QUOTE */
+
+.quote {
+
+    display: flex;
+
+    gap: 20px;
+
+    align-items: center;
+
+    margin-top: 50px;
+
+}
+
+
+.quote-line {
+
+    width: 3px;
+
+    height: 55px;
+
+    background: #b99467;
+
+}
+
+
+.quote p {
+
+    max-width: 350px;
+
+    font-family: Georgia, serif;
+
+    font-style: italic;
+
+    color: #75695e;
+
+    line-height: 1.6;
+
+}
+
+
+/* =====================================
+   AUTH BOX
+===================================== */
+
+.auth-box {
+
+    width: 450px;
+
+    background: white;
+
+    padding: 45px;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 25px 70px
+        rgba(65, 50, 35, 0.10);
+
+    position: relative;
+
+    z-index: 5;
+
+}
+
+
+.form-header {
+
+    margin-bottom: 30px;
+
+}
+
+
+.form-header h2 {
+
+    font-family: Georgia, serif;
+
+    font-size: 38px;
+
+    font-weight: normal;
+
+    margin-bottom: 10px;
+
+}
+
+
+.form-header > p:not(.small-title) {
+
+    color: #8a7b6b;
+
+    font-size: 14px;
+
+}
+
+
+/* =====================================
+   INPUT
+===================================== */
+
+.input-group {
+
+    margin-bottom: 22px;
+
+}
+
+
+.input-group label {
+
+    display: block;
+
+    margin-bottom: 9px;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    color: #51463d;
+
+}
+
+
+.input-group input {
+
+    width: 100%;
+
+    height: 50px;
+
+    border: 1px solid #e2d7ca;
+
+    border-radius: 9px;
+
+    padding: 0 16px;
+
+    outline: none;
+
+    font-size: 14px;
+
+    color: #3e352d;
+
+    background: #fdfbf8;
+
+    transition: 0.3s;
+
+}
+
+
+.input-group input:focus {
+
+    border-color: #b99467;
+
+    background: white;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(185, 148, 103, 0.10);
+
+}
+
+
+.input-group input::placeholder {
+
+    color: #b1a69c;
+
+}
+
+
+/* =====================================
+   LABEL ROW
+===================================== */
+
+.label-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+.label-row a {
+
+    font-size: 12px;
+
+    color: #b99467;
+
+}
+
+
+/* =====================================
+   REMEMBER
+===================================== */
+
+.remember {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin: 5px 0 25px;
+
+    font-size: 12px;
+
+    color: #817468;
+
+}
+
+
+.remember input {
+
+    accent-color: #b99467;
+
+}
+
+
+/* =====================================
+   BUTTON
+===================================== */
+
+.auth-button {
+
+    width: 100%;
+
+    height: 52px;
+
+    border: none;
+
+    border-radius: 30px;
+
+    background: #3e352d;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+
+}
+
+
+.auth-button span {
+
+    margin-left: 10px;
+
+    font-size: 18px;
+
+}
+
+
+.auth-button:hover {
+
+    background: #b99467;
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 10px 25px
+        rgba(100, 75, 45, 0.18);
+
+}
+
+
+/* =====================================
+   DIVIDER
+===================================== */
+
+.divider {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin: 28px 0;
+
+}
+
+
+.divider span {
+
+    height: 1px;
+
+    background: #eee5d9;
+
+    flex: 1;
+
+}
+
+
+.divider p {
+
+    font-size: 12px;
+
+    color: #aaa096;
+
+}
+
+
+/* =====================================
+   SWITCH FORM
+===================================== */
+
+.switch-form {
+
+    text-align: center;
+
+    color: #8a7b6b;
+
+    font-size: 13px;
+
+}
+
+
+.switch-form a {
+
+    color: #b99467;
+
+    font-weight: bold;
+
+}
+
+
+/* =====================================
+   REGISTER
+===================================== */
+
+.register-container {
+
+    gap: 100px;
+
+}
+
+
+.register-intro {
+
+    flex: 1;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+
+.intro-circle {
+
+    width: 450px;
+
+    height: 450px;
+
+    background: #e8dccb;
+
+    border-radius: 50%;
+
+    padding: 90px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+}
+
+
+.circle-number {
+
+    color: #b99467;
+
+    font-size: 14px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.intro-circle h2 {
+
+    font-family: Georgia, serif;
+
+    font-size: 40px;
+
+    font-weight: normal;
+
+    line-height: 1.15;
+
+}
+
+
+.intro-circle h2 span {
+
+    color: #8c704f;
+
+    font-style: italic;
+
+}
+
+
+.intro-circle p {
+
+    margin-top: 25px;
+
+    color: #75695e;
+
+    line-height: 1.7;
+
+}
+
+
+/* =====================================
+   FOOTER
+===================================== */
+
+footer {
+
+    height: 60px;
+
+    background: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #9a8d80;
+
+    font-size: 12px;
+
+}
+
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+
+@media (max-width: 1000px) {
+
+    .auth-container {
+
+        flex-direction: column;
+
+        padding-top: 80px;
+
+    }
+
+
+    .auth-intro {
+
+        width: 100%;
+
+        text-align: center;
+
+    }
+
+
+    .intro-text {
+
+        margin-left: auto;
+
+        margin-right: auto;
+
+    }
+
+
+    .quote {
+
+        justify-content: center;
+
+    }
+
+
+    .register-intro {
+
+        display: none;
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .header {
+
+        padding: 0 5%;
+
+    }
+
+
+    .back-home {
+
+        font-size: 12px;
+
+    }
+
+
+    .auth-container {
+
+        padding: 50px 5%;
+
+    }
+
+
+    .auth-intro h1 {
+
+        font-size: 42px;
+
+    }
+
+
+    .auth-box {
+
+        width: 100%;
+
+        padding: 30px 25px;
+
+    }
+
+
+    .paper-plane {
+
+        opacity: 0.5;
+
+        right: 0;
+
+    }
+
+}

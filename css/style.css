@@ -1,0 +1,1130 @@
+
+/* =====================================
+   RESET
+===================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: #f5efe6;
+
+    color: #3e352d;
+
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+}
+
+
+/* =====================================
+   HEADER
+===================================== */
+
+.header {
+
+    width: 100%;
+    height: 80px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 7%;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #eee5d9;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+}
+
+
+/* LOGO */
+
+.logo {
+
+    font-size: 28px;
+
+    font-weight: bold;
+
+    color: #3e352d;
+
+}
+
+.logo span {
+
+    color: #b99467;
+
+}
+
+
+/* MENU */
+
+.menu {
+
+    display: flex;
+
+    gap: 35px;
+
+}
+
+.menu a {
+
+    color: #5d5248;
+
+    font-size: 15px;
+
+    transition: 0.3s;
+
+}
+
+.menu a:hover {
+
+    color: #b99467;
+
+}
+
+
+/* HEADER BUTTON */
+
+.header-button {
+
+    display: flex;
+
+    gap: 15px;
+
+    align-items: center;
+
+}
+
+.btn-dangnhap {
+
+    color: #4a4037;
+
+    font-size: 14px;
+
+}
+
+.btn-taocv {
+
+    background: #b99467;
+
+    color: white;
+
+    padding: 11px 20px;
+
+    border-radius: 30px;
+
+    font-size: 14px;
+
+}
+
+
+/* =====================================
+   MÁY BAY
+===================================== */
+
+.may-bay {
+
+    position: fixed;
+
+    width: 150px;
+
+    height: 100px;
+
+    top: 120px;
+
+    right: 8%;
+
+    z-index: 90;
+
+    pointer-events: none;
+
+    transition: transform 0.1s linear;
+
+}
+
+
+/* thân */
+
+.than-may-bay {
+
+    position: absolute;
+
+    width: 0;
+
+    height: 0;
+
+    border-left: 110px solid white;
+
+    border-top: 38px solid transparent;
+
+    border-bottom: 38px solid transparent;
+
+    filter: drop-shadow(
+        0 12px 10px
+        rgba(50, 40, 30, 0.18)
+    );
+
+}
+
+
+/* cánh */
+
+.canh-may-bay {
+
+    position: absolute;
+
+    left: 35px;
+
+    top: 38px;
+
+    width: 0;
+
+    height: 0;
+
+    border-left: 70px solid #d5c1a5;
+
+    border-top: 8px solid transparent;
+
+    border-bottom: 38px solid transparent;
+
+}
+
+
+/* =====================================
+   HOME
+===================================== */
+
+.home {
+
+    min-height: 100vh;
+
+    padding: 100px 8%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    position: relative;
+
+}
+
+
+.home-content {
+
+    width: 55%;
+
+}
+
+
+.small-title {
+
+    color: #b99467;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.home h1 {
+
+    font-family: Georgia, serif;
+
+    font-size: 65px;
+
+    line-height: 1.08;
+
+    font-weight: normal;
+
+}
+
+
+.home h1 span {
+
+    color: #b99467;
+
+    font-style: italic;
+
+}
+
+
+.description {
+
+    max-width: 580px;
+
+    margin-top: 30px;
+
+    color: #75695e;
+
+    font-size: 17px;
+
+    line-height: 1.7;
+
+}
+
+
+/* BUTTON */
+
+.home-buttons {
+
+    display: flex;
+
+    gap: 15px;
+
+    margin-top: 35px;
+
+}
+
+
+.button-primary {
+
+    display: inline-block;
+
+    background: #3e352d;
+
+    color: white;
+
+    padding: 15px 28px;
+
+    border-radius: 30px;
+
+    transition: 0.3s;
+
+}
+
+
+.button-primary:hover {
+
+    background: #b99467;
+
+    transform: translateY(-4px);
+
+}
+
+
+.button-secondary {
+
+    padding: 15px 28px;
+
+    border: 1px solid #bda98e;
+
+    border-radius: 30px;
+
+    color: #5c5045;
+
+}
+
+
+/* INFO */
+
+.info {
+
+    display: flex;
+
+    gap: 60px;
+
+    margin-top: 55px;
+
+}
+
+
+.info-item strong {
+
+    font-size: 25px;
+
+}
+
+
+.info-item p {
+
+    font-size: 12px;
+
+    color: #8a7b6b;
+
+    margin-top: 5px;
+
+}
+
+
+/* =====================================
+   CV CARD
+===================================== */
+
+.home-image {
+
+    width: 40%;
+
+    height: 600px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    position: relative;
+
+}
+
+
+.circle {
+
+    position: absolute;
+
+    width: 500px;
+
+    height: 500px;
+
+    background: #e8dccb;
+
+    border-radius: 50%;
+
+}
+
+
+.cv-card {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 340px;
+
+    height: 450px;
+
+    background: white;
+
+    padding: 35px;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 30px 70px
+        rgba(70, 55, 40, 0.15);
+
+    transform: rotate(4deg);
+
+}
+
+
+/* CV TOP */
+
+.cv-top {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+}
+
+
+.avatar {
+
+    width: 60px;
+
+    height: 60px;
+
+    background: #e8dccb;
+
+    border-radius: 50%;
+
+}
+
+
+.line {
+
+    height: 8px;
+
+    background: #d6c2a9;
+
+    border-radius: 10px;
+
+    margin-bottom: 8px;
+
+}
+
+.line.big {
+
+    width: 130px;
+
+}
+
+.line.small {
+
+    width: 90px;
+
+}
+
+
+.cv-line {
+
+    height: 2px;
+
+    background: #eee7df;
+
+    margin: 25px 0;
+
+}
+
+
+.cv-section {
+
+    margin-bottom: 30px;
+
+}
+
+
+.section-title {
+
+    width: 90px;
+
+    height: 10px;
+
+    background: #b99467;
+
+    border-radius: 10px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.section-line {
+
+    height: 6px;
+
+    background: #eee7df;
+
+    border-radius: 10px;
+
+    margin-bottom: 9px;
+
+}
+
+
+.section-line.short {
+
+    width: 70%;
+
+}
+
+
+.cv-footer {
+
+    display: flex;
+
+    gap: 8px;
+
+}
+
+
+.cv-footer span {
+
+    width: 30px;
+
+    height: 30px;
+
+    border-radius: 50%;
+
+    background: #e8dccb;
+
+}
+
+
+/* =====================================
+   SECTION CHUNG
+===================================== */
+
+.section {
+
+    min-height: 100vh;
+
+    padding: 120px 8%;
+
+}
+
+
+/* =====================================
+   GIỚI THIỆU
+===================================== */
+
+.gioi-thieu {
+
+    background: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+
+.section-content {
+
+    max-width: 600px;
+
+}
+
+
+.section-content h2 {
+
+    font-family: Georgia, serif;
+
+    font-size: 55px;
+
+    line-height: 1.15;
+
+    font-weight: normal;
+
+    margin-bottom: 30px;
+
+}
+
+
+.section-content > p:not(.small-title) {
+
+    color: #75695e;
+
+    font-size: 17px;
+
+    line-height: 1.8;
+
+}
+
+
+/* NUMBER */
+
+.number-box {
+
+    width: 330px;
+
+    height: 330px;
+
+    border-radius: 50%;
+
+    background: #f5efe6;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding: 60px;
+
+}
+
+
+.number-box span {
+
+    color: #b99467;
+
+    font-size: 14px;
+
+}
+
+
+.number-box h3 {
+
+    font-family: Georgia, serif;
+
+    font-size: 30px;
+
+    margin: 15px 0;
+
+}
+
+
+.number-box p {
+
+    color: #75695e;
+
+    line-height: 1.6;
+
+}
+
+
+/* =====================================
+   TÍNH NĂNG
+===================================== */
+
+.tinh-nang {
+
+    background: #f5efe6;
+
+}
+
+
+.section-title-center {
+
+    text-align: center;
+
+    margin-bottom: 70px;
+
+}
+
+
+.section-title-center h2 {
+
+    font-family: Georgia, serif;
+
+    font-size: 55px;
+
+    font-weight: normal;
+
+}
+
+
+/* FEATURES */
+
+.features {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 25px;
+
+}
+
+
+.feature-card {
+
+    background: white;
+
+    padding: 45px;
+
+    min-height: 300px;
+
+    border-radius: 15px;
+
+    transition: 0.4s;
+
+}
+
+
+.feature-card:hover {
+
+    transform: translateY(-10px);
+
+    box-shadow:
+        0 20px 50px
+        rgba(60, 50, 40, 0.1);
+
+}
+
+
+.feature-card span {
+
+    color: #b99467;
+
+    font-size: 14px;
+
+}
+
+
+.feature-card h3 {
+
+    font-family: Georgia, serif;
+
+    font-size: 32px;
+
+    margin: 25px 0 15px;
+
+}
+
+
+.feature-card p {
+
+    color: #75695e;
+
+    line-height: 1.7;
+
+}
+
+
+/* =====================================
+   MẪU CV
+===================================== */
+
+.mau-cv {
+
+    background: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+
+.mau-container {
+
+    width: 50%;
+
+    height: 500px;
+
+    position: relative;
+
+}
+
+
+.mau {
+
+    width: 230px;
+
+    height: 320px;
+
+    background: #f5efe6;
+
+    position: absolute;
+
+    padding: 20px;
+
+    box-shadow:
+        0 20px 50px
+        rgba(50, 40, 30, 0.12);
+
+    transition: 0.4s;
+
+}
+
+
+.mau:hover {
+
+    transform: translateY(-20px);
+
+    z-index: 10;
+
+}
+
+
+.mau-1 {
+
+    left: 0;
+
+    top: 80px;
+
+    transform: rotate(-8deg);
+
+}
+
+
+.mau-2 {
+
+    left: 160px;
+
+    top: 30px;
+
+    background: #eee5d9;
+
+}
+
+
+.mau-3 {
+
+    left: 320px;
+
+    top: 100px;
+
+    transform: rotate(8deg);
+
+}
+
+
+.mau-header {
+
+    height: 60px;
+
+    background: white;
+
+    margin-bottom: 20px;
+
+}
+
+
+.mau-content {
+
+    height: 200px;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            white 0,
+            white 7px,
+            transparent 7px,
+            transparent 20px
+        );
+
+}
+
+
+/* =====================================
+   CTA
+===================================== */
+
+.cta {
+
+    min-height: 650px;
+
+    background: #3e352d;
+
+    color: white;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+}
+
+
+.cta .small-title {
+
+    color: #d6b98f;
+
+}
+
+
+.cta h2 {
+
+    font-family: Georgia, serif;
+
+    font-size: 65px;
+
+    font-weight: normal;
+
+    line-height: 1.15;
+
+    margin-bottom: 40px;
+
+}
+
+
+.cta-button {
+
+    display: inline-block;
+
+    background: white;
+
+    color: #3e352d;
+
+    padding: 16px 30px;
+
+    border-radius: 30px;
+
+    font-weight: bold;
+
+}
+
+
+/* =====================================
+   FOOTER
+===================================== */
+
+footer {
+
+    min-height: 100px;
+
+    padding: 30px 8%;
+
+    background: white;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+footer p {
+
+    color: #8a7b6b;
+
+    font-size: 13px;
+
+}
+
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+
+@media (max-width: 1000px) {
+
+    .menu {
+
+        display: none;
+
+    }
+
+
+    .home {
+
+        flex-direction: column;
+
+        text-align: center;
+
+    }
+
+
+    .home-content {
+
+        width: 100%;
+
+    }
+
+
+    .home-image {
+
+        width: 100%;
+
+        margin-top: 50px;
+
+    }
+
+
+    .description {
+
+        margin-left: auto;
+
+        margin-right: auto;
+
+    }
+
+
+    .home-buttons {
+
+        justify-content: center;
+
+    }
+
+
+    .info {
+
+        justify-content: center;
+
+    }
+
+
+    .gioi-thieu,
+    .mau-cv {
+
+        flex-direction: column;
+
+        gap: 70px;
+
+    }
+
+
+    .features {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .mau-container {
+
+        width: 100%;
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .home h1 {
+
+        font-size: 42px;
+
+    }
+
+
+    .section-content h2,
+    .section-title-center h2 {
+
+        font-size: 40px;
+
+    }
+
+
+    .cta h2 {
+
+        font-size: 42px;
+
+    }
+
+
+    .cv-card {
+
+        width: 280px;
+
+    }
+
+
+    .circle {
+
+        width: 330px;
+
+        height: 330px;
+
+    }
+
+
+    .mau-container {
+
+        transform: scale(0.75);
+
+    }
+
+
+    footer {
+
+        flex-direction: column;
+
+        gap: 15px;
+
+    }
+
+}
+
