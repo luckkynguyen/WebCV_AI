@@ -209,55 +209,65 @@ Chuyển hướng sang trang preview.
 
 ### 6. THIẾT KẾ CƠ SỞ DỮ LIỆU
 
-#### 6.1. Bảng users
-
-sql
-
+#### 6.1. Bảng `users` (Quản lý tài khoản)
+```sql
 CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
-id INT AUTO_INCREMENT PRIMARY KEY,
+#### 6.2. Bảng `templates` (Quản lý mẫu CV)
+```sql
+CREATE TABLE templates (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    thumbnail VARCHAR(255) DEFAULT NULL,
+    description TEXT,
+    is_active TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
-email VARCHAR(255) NOT NULL UNIQUE,
-
-password VARCHAR(255) NOT NULL,
-
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-);
-
-#### 6.2. Bảng cvs
-
-sql
-
+#### 6.3. Bảng `cvs` (Lưu dữ liệu CV)
+```sql
 CREATE TABLE cvs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    template_id INT DEFAULT 1,
+    title VARCHAR(255) DEFAULT 'CV Chưa Đặt Tên',
+    data JSON NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (template_id) REFERENCES templates(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
-id INT AUTO_INCREMENT PRIMARY KEY,
+#### 6.4. Bảng `chat_sessions` (Lưu lịch sử & trạng thái hội thoại Chat AI)
+```sql
+CREATE TABLE chat_sessions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    cv_id INT DEFAULT NULL,
+    current_step VARCHAR(50) DEFAULT 'personal',
+    messages JSON NOT NULL,
+    status ENUM('in_progress', 'completed') DEFAULT 'in_progress',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (cv_id) REFERENCES cvs(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
-user_id INT NOT NULL,
+**Ghi chú thiết kế:**
+- Cột `data` trong bảng `cvs` lưu toàn bộ dữ liệu CV chi tiết dạng JSON để đảm bảo tính linh hoạt tối đa.
+- Bảng `templates` cho phép quản lý mẫu CV động thay vì hardcode trong frontend.
+- Bảng `chat_sessions` cho phép lưu vết hội thoại AI, giúp người dùng không bị mất dữ liệu khi lỡ reload trang hoặc bị hết hạn session.
 
-title VARCHAR(255),
-
-data JSON NOT NULL,
-
-template_id INT DEFAULT 1,
-
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-
-);
-
-**Ghi chú:**
-
-Cột data lưu toàn bộ dữ liệu CV dạng JSON để linh hoạt.
-
-template_id lưu mẫu CV đã chọn (1, 2, 3).
-
-Mỗi người dùng có thể có nhiều CV.
-
-#### 6.3. Định dạng JSON CV
+#### 6.5. Định dạng JSON CV
 
 json
 
