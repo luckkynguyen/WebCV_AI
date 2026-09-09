@@ -145,20 +145,20 @@ Quản lý nhiều phiên chat phức tạp, lưu lịch sử chat dài hạn (c
 ▼
 [Apache + PHP]  ← controller chính
 │
-├──► [MySQL]       lưu users, cvs
+├──► [MySQL]       lưu users, templates, cvs, chat_sessions
 ├──► [Gemini API]  gọi bằng cURL để xử lý ngôn ngữ
 └──► [mPDF]        xuất PDF từ HTML template
 ```
 
 #### 4.2. Vai trò các thành phần
 
-PHP: Điều phối mọi request, quản lý session, xác thực, gọi AI, kiểm tra JSON, truy vấn DB, render template, gọi mPDF.
+PHP: Điều phối mọi request, quản lý session, xác thực, gọi AI, kiểm tra JSON, truy vấn DB, render template, gọi mPDF.
 
-AI (Gemini): Chỉ xử lý ngôn ngữ tự nhiên: hiểu câu trả lời, tạo câu hỏi tiếp theo, viết lại câu chữ, tạo JSON CV. Không lưu trạng thái.
+AI (Gemini): Chỉ xử lý ngôn ngữ tự nhiên: hiểu câu trả lời, tạo câu hỏi tiếp theo, viết lại câu chữ, tạo JSON CV. Không lưu trạng thái.
 
-MySQL: Lưu thông tin người dùng và dữ liệu CV.
+MySQL: Lưu thông tin người dùng, danh sách mẫu CV, dữ liệu CV và lịch sử hội thoại Chat AI trong bảng `chat_sessions`.
 
-HTML/CSS/JS: Giao diện và tương tác phía client.
+HTML/CSS/JS: Giao diện và tương tác phía client.
 
 #### 4.3. Luồng dữ liệu khi dùng form
 
@@ -482,44 +482,29 @@ Endpoint: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-fl
 
 #### 10.2. Quản lý trạng thái hội thoại
 
-Trạng thái được lưu trong session ($_SESSION['chat_state']).
+Trạng thái hội thoại được lưu trữ bền vững trong bảng **`chat_sessions`** của Database (và đồng bộ tạm trong `$_SESSION['chat_state']` để tối ưu tốc độ).
 
-Cấu trúc:
+Cấu trúc lưu trữ dữ liệu phiên chat:
 
-php
-
-$_SESSION['chat_state'] = [
-
-'current_step' => 'personal', // 'personal', 'education', 'skills', 'experience', 'projects', 'objective', 'done'
-
-'collected_data' => [
-
-'personal' => [],
-
-'education' => [],
-
-'skills' => [],
-
-'experience' => [],
-
-'projects' => [],
-
-'objective' => ''
-
-],
-
-'conversation' => [
-
-// mảng các tin nhắn
-
-```text
-['role' => 'assistant', 'content' => '...'],
-['role' => 'user', 'content' => '...']
+```json
+{
+  "current_step": "personal",
+  "collected_data": {
+    "personal": {},
+    "education": [],
+    "skills": [],
+    "experience": [],
+    "projects": [],
+    "objective": ""
+  },
+  "conversation": [
+    {"role": "assistant", "content": "..."},
+    {"role": "user", "content": "..."}
+  ]
+}
 ```
 
-]
-
-];
+PHP cập nhật `current_step` và ghi chú tin nhắn mới vào DB sau mỗi lượt trao đổi, giúp giữ nguyên vết hội thoại kể cả khi người dùng làm mới trang hoặc bị gián đoạn mạng.
 
 PHP cập nhật current_step sau mỗi bước, dựa trên phản hồi AI hoặc logic riêng.
 
