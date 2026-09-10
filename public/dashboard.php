@@ -1,4 +1,25 @@
 
+<?php
+
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+requireLogin();
+
+$statement = $pdo->prepare('SELECT full_name, email FROM users WHERE id = :user_id LIMIT 1');
+$statement->execute(['user_id' => getCurrentUserId()]);
+$currentUser = $statement->fetch();
+
+if (!$currentUser) {
+    $_SESSION = [];
+    session_destroy();
+    header('Location: login.php');
+    exit;
+}
+
+$displayName = $currentUser['full_name'] ?: $currentUser['email'];
+?>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -103,7 +124,7 @@
 
     <div class="sidebar-bottom">
 
-        <a href="#" class="menu-item logout">
+        <a href="logout.php" class="menu-item logout">
 
             <span class="icon">↪</span>
 
@@ -137,7 +158,7 @@
 
             <h2>
                 Xin chào,
-                <span>Nguyễn Văn A</span> 👋
+                <span><?= htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8') ?></span> 👋
             </h2>
 
         </div>
@@ -155,7 +176,7 @@
             <div class="user-info">
 
                 <strong>
-                    Nguyễn Văn A
+                    <?= htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8') ?>
                 </strong>
 
                 <span>

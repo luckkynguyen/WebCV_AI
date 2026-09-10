@@ -1,4 +1,57 @@
 
+<?php
+
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+redirectAuthenticatedUser();
+
+$error = null;
+$fullName = '';
+$email = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $fullName = trim((string) ($_POST['full_name'] ?? ''));
+    $email = strtolower(trim((string) ($_POST['email'] ?? '')));
+    $password = (string) ($_POST['password'] ?? '');
+    $passwordConfirmation = (string) ($_POST['password_confirmation'] ?? '');
+
+    if ($fullName === '' || mb_strlen($fullName) > 255) {
+        $error = 'Vui lòng nhập họ tên hợp lệ.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Vui lòng nhập email hợp lệ.';
+    } elseif (mb_strlen($password) < 6) {
+        $error = 'Mật khẩu phải có ít nhất 6 ký tự.';
+    } elseif ($password !== $passwordConfirmation) {
+        $error = 'Mật khẩu xác nhận không khớp.';
+    } else {
+        $statement = $pdo->prepare('SELECT id FROM users WHERE email = :email LIMIT 1');
+        $statement->execute(['email' => $email]);
+
+        if ($statement->fetch()) {
+            $error = 'Email này đã được sử dụng.';
+        } else {
+            $statement = $pdo->prepare(
+                'INSERT INTO users (full_name, email, password) VALUES (:full_name, :email, :password)'
+            );
+            $statement->execute([
+                'full_name' => $fullName,
+                'email' => $email,
+                'password' => password_hash($password, PASSWORD_DEFAULT),
+            ]);
+
+            session_regenerate_id(true);
+            $_SESSION['user_id'] = (int) $pdo->lastInsertId();
+            $_SESSION['user_email'] = $email;
+            $_SESSION['user_full_name'] = $fullName;
+
+            header('Location: dashboard.php');
+            exit;
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -28,7 +81,7 @@
             CV<span>AI</span>
         </a>
 
-        <a href="login.html" class="back-home">
+        <a href="login.php" class="back-home">
             Đã có tài khoản?
             <b>Đăng nhập</b>
         </a>
@@ -75,7 +128,11 @@
             </div>
 
 
-            <form>
+            <?php if ($error !== null): ?>
+                <p class="form-error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
+            <?php endif; ?>
+
+            <form method="post" action="register.php">
 
 
                 <!-- HỌ TÊN -->
@@ -87,8 +144,10 @@
                     </label>
 
                     <input
+                        name="full_name"
                         type="text"
                         placeholder="Nhập họ và tên"
+                        value="<?= htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8') ?>"
                         required
                     >
 
@@ -104,8 +163,10 @@
                     </label>
 
                     <input
+                        name="email"
                         type="email"
                         placeholder="Nhập email"
+                        value="<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>"
                         required
                     >
 
@@ -121,6 +182,7 @@
                     </label>
 
                     <input
+                        name="password"
                         type="password"
                         placeholder="Tạo mật khẩu"
                         required
@@ -138,6 +200,7 @@
                     </label>
 
                     <input
+                        name="password_confirmation"
                         type="password"
                         placeholder="Nhập lại mật khẩu"
                         required
@@ -185,7 +248,7 @@
 
                 Đã có tài khoản?
 
-                <a href="login.html">
+                <a href="login.php">
                     Đăng nhập
                 </a>
 

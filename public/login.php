@@ -1,4 +1,39 @@
 
+<?php
+
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+redirectAuthenticatedUser();
+
+$error = null;
+$email = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = strtolower(trim((string) ($_POST['email'] ?? '')));
+    $password = (string) ($_POST['password'] ?? '');
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
+        $error = 'Vui lòng nhập email hợp lệ và mật khẩu.';
+    } else {
+        $statement = $pdo->prepare('SELECT id, password FROM users WHERE email = :email LIMIT 1');
+        $statement->execute(['email' => $email]);
+        $user = $statement->fetch();
+
+        if (!$user || !password_verify($password, $user['password'])) {
+            $error = 'Email hoặc mật khẩu không chính xác.';
+        } else {
+            session_regenerate_id(true);
+            $_SESSION['user_id'] = (int) $user['id'];
+            $_SESSION['user_email'] = $email;
+
+            header('Location: dashboard.php');
+            exit;
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -21,7 +56,7 @@
             CV<span>AI</span>
         </a>
 
-        <a href="register.html" class="back-home">
+        <a href="register.php" class="back-home">
             Chưa có tài khoản? <b>Đăng ký</b>
         </a>
 
@@ -98,7 +133,11 @@
             </div>
 
 
-            <form>
+            <?php if ($error !== null): ?>
+                <p class="form-error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
+            <?php endif; ?>
+
+            <form method="post" action="login.php">
 
                 <!-- EMAIL -->
 
@@ -109,8 +148,10 @@
                     </label>
 
                     <input
+                        name="email"
                         type="email"
                         placeholder="Nhập email của bạn"
+                        value="<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>"
                         required
                     >
 
@@ -127,13 +168,14 @@
                             Mật khẩu
                         </label>
 
-                        <a href="#">
+                        <a href="login.php">
                             Quên mật khẩu?
                         </a>
 
                     </div>
 
                     <input
+                        name="password"
                         type="password"
                         placeholder="Nhập mật khẩu"
                         required
@@ -189,7 +231,7 @@
 
                 Chưa có tài khoản?
 
-                <a href="register.html">
+                <a href="register.php">
                     Đăng ký ngay
                 </a>
 

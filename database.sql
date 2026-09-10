@@ -11,6 +11,7 @@ USE `cv_app`;
 -- 1. BẢNG USERS (Quản lý tài khoản)
 CREATE TABLE IF NOT EXISTS `users` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `full_name` VARCHAR(255) DEFAULT NULL,
     `email` VARCHAR(255) NOT NULL UNIQUE,
     `password` VARCHAR(255) NOT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -73,8 +74,8 @@ INSERT INTO `templates` (`id`, `name`, `thumbnail`, `description`, `is_active`) 
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
 
 -- Mật khẩu tài khoản mẫu testuser@gmail.com: 123456 (bcrypt hash)
-INSERT INTO `users` (`id`, `email`, `password`) VALUES
-(1, 'testuser@gmail.com', '$2y$10$wT8v1R5j.yM7N1U8pGZJ3.5n9S8E0v3Q8K8v8W8X8Y8Z8A8B8C8D8')
+INSERT INTO `users` (`id`, `full_name`, `email`, `password`) VALUES
+(1, 'Nguyễn Văn A', 'testuser@gmail.com', '$2y$10$wT8v1R5j.yM7N1U8pGZJ3.5n9S8E0v3Q8K8v8W8X8Y8Z8A8B8C8D8')
 ON DUPLICATE KEY UPDATE `email` = VALUES(`email`);
 
 -- Dữ liệu mẫu cho CV đầu tiên
