@@ -89,4 +89,10 @@ Dự án này là sản phẩm Đồ án 1 (Web App Tạo CV bằng Chat AI) đ�
 - Nếu phát hiện một vấn đề nằm ngoài phạm vi công việc hiện tại, phải ghi nhận và thông báo trước khi sửa.
 - Ưu tiên hoàn thành chức năng nhỏ, dễ kiểm tra trước khi mở rộng sang chức năng lớn hơn.
 
+### 12. Quy tắc Làm rõ Thông tin và Không Tự Bịa đặt (Clarification & No Fabrication)
+- Trong quá trình trao đổi, nếu yêu cầu, mục tiêu, phạm vi hoặc thông tin kỹ thuật chưa rõ ràng, AI phải chủ động hỏi lại chủ dự án để có đủ thông tin trước khi thực hiện.
+- AI không được tự suy đoán hoặc tự bịa ra thông tin, yêu cầu, dữ liệu, hành vi hệ thống hoặc quyết định thiết kế mà chủ dự án chưa cung cấp hoặc xác nhận.
+- Khi phải đưa ra giả định tạm thời vì chưa thể hỏi lại ngay, AI phải nêu rõ đó là giả định và không được xem giả định đó là yêu cầu chính thức của dự án.
+- Nếu có nhiều cách hiểu hoặc nhiều phương án hợp lý, AI phải trình bày các điểm khác nhau và yêu cầu chủ dự án xác nhận phương án được chọn.
+
 ---
