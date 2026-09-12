@@ -34,5 +34,59 @@ Dự án này là sản phẩm Đồ án 1 (Web App Tạo CV bằng Chat AI) đ�
 - Chỉ sau khi chủ dự án xác nhận đồng ý, AI mới được bắt đầu chỉnh sửa. AI không được thực hiện trước rồi mới xin phép từng phần sau khi thay đổi đã xảy ra.
 - Nếu phát sinh nhu cầu thay đổi ngoài phạm vi đã được phê duyệt, AI phải dừng phần phát sinh đó, thông báo lại và chờ chủ dự án xác nhận trước khi tiếp tục.
 
+### 6. Quy tắc Quản lý Branch và Pull Request (Branch & Pull Request Workflow)
+- Không phát triển trực tiếp trên branch `main`.
+- Mỗi chức năng hoặc nhóm thay đổi lớn phải sử dụng một branch riêng.
+- Tên branch phải mô tả rõ mục đích, ví dụ:
+  - `feature/user-authentication`
+  - `feature/cv-management`
+  - `fix/login-validation`
+- Trước khi tạo Pull Request phải kiểm tra code, chạy thử chức năng và xem lại các file đã thay đổi.
+- Chỉ merge vào `main` sau khi đã test và review.
+- Không sử dụng `git push --force` trên `main` hoặc branch đang được thành viên khác sử dụng nếu chưa thống nhất.
+
+### 7. Quy tắc Commit (Commit Convention)
+- Mỗi commit chỉ nên chứa một nhóm thay đổi liên quan.
+- Không commit các file chứa mật khẩu, API key, dữ liệu cá nhân hoặc cấu hình riêng của máy.
+- Nội dung commit phải ngắn gọn và mô tả đúng thay đổi, ví dụ:
+  - `feat: add user registration`
+  - `fix: validate login input`
+  - `docs: update project rules`
+- Không sử dụng các commit quá chung chung như `update`, `test` hoặc `fix stuff`.
+
+### 8. Quy tắc Đồng bộ Cơ sở Dữ liệu (Database Synchronization)
+- Mọi thay đổi bảng, cột, khóa hoặc dữ liệu khởi tạo phải được cập nhật trong `database.sql` hoặc file migration tương ứng.
+- Không chỉ sửa database trực tiếp trên một máy mà không cập nhật lại repository.
+- Khi thay đổi database phải ghi rõ:
+  - Thành phần được thay đổi.
+  - Lý do thay đổi.
+  - Cách cập nhật database hiện tại.
+  - Ảnh hưởng đến mã nguồn.
+- Mỗi thành viên phải có thể dựng lại database từ các file SQL trong repository.
+
+### 9. Quy tắc Bảo mật và Cấu hình (Security & Configuration)
+- Không commit mật khẩu, API key, token hoặc thông tin bí mật vào Git.
+- Thông tin cấu hình riêng phải được đặt trong file cấu hình local hoặc biến môi trường.
+- Nếu có file mẫu cấu hình, chỉ commit file như `.env.example` với giá trị minh họa.
+- Không sử dụng dữ liệu người dùng thật trong quá trình phát triển hoặc kiểm thử.
+- Dữ liệu đầu vào từ người dùng phải được kiểm tra trước khi lưu vào database hoặc hiển thị ra giao diện.
+
+### 10. Quy tắc Kiểm thử Trước khi Hoàn thành (Testing Before Completion)
+- Mỗi chức năng mới phải được kiểm tra ít nhất bằng các trường hợp:
+  - Dữ liệu hợp lệ.
+  - Dữ liệu rỗng hoặc thiếu.
+  - Dữ liệu sai định dạng.
+  - Người dùng chưa đăng nhập hoặc không có quyền.
+- Trước khi push code phải kiểm tra các chức năng liên quan để tránh làm hỏng chức năng cũ.
+- Nếu phát hiện lỗi chưa thể sửa ngay, phải ghi lại lỗi, nguyên nhân dự kiến và cách tái hiện.
+
+### 11. Quy tắc Xử lý Lỗi và Phạm vi Thay đổi (Error Handling & Change Scope)
+- Không được bỏ qua lỗi bằng cách để chương trình tiếp tục chạy như thể không có lỗi.
+- Lỗi phải được xử lý rõ ràng và hiển thị thông báo phù hợp cho người dùng.
+- Không hiển thị thông tin nhạy cảm như câu lệnh SQL, đường dẫn máy cá nhân hoặc thông tin cấu hình hệ thống.
+- Khi phát hiện lỗi nghiêm trọng, phải ghi lại lỗi và thông báo cho thành viên còn lại trước khi tiếp tục phát triển tính năng mới.
+- Không tự ý kết hợp nhiều chức năng không liên quan trong cùng một thay đổi.
+- Nếu phát hiện một vấn đề nằm ngoài phạm vi công việc hiện tại, phải ghi nhận và thông báo trước khi sửa.
+- Ưu tiên hoàn thành chức năng nhỏ, dễ kiểm tra trước khi mở rộng sang chức năng lớn hơn.
 
 ---
