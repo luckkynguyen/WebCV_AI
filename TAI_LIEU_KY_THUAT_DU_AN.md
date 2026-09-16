@@ -145,20 +145,20 @@ Quản lý nhiều phiên chat phức tạp, lưu lịch sử chat dài hạn (c
 ▼
 [Apache + PHP]  ← controller chính
 │
-├──► [MySQL]       lưu users, cvs
+├──► [MySQL]       lưu users, templates, cvs, chat_sessions
 ├──► [Gemini API]  gọi bằng cURL để xử lý ngôn ngữ
 └──► [mPDF]        xuất PDF từ HTML template
 ```
 
 #### 4.2. Vai trò các thành phần
 
-PHP: Điều phối mọi request, quản lý session, xác thực, gọi AI, kiểm tra JSON, truy vấn DB, render template, gọi mPDF.
+PHP: Điều phối mọi request, quản lý session, xác thực, gọi AI, kiểm tra JSON, truy vấn DB, render template, gọi mPDF.
 
-AI (Gemini): Chỉ xử lý ngôn ngữ tự nhiên: hiểu câu trả lời, tạo câu hỏi tiếp theo, viết lại câu chữ, tạo JSON CV. Không lưu trạng thái.
+AI (Gemini): Chỉ xử lý ngôn ngữ tự nhiên: hiểu câu trả lời, tạo câu hỏi tiếp theo, viết lại câu chữ, tạo JSON CV. Không lưu trạng thái.
 
-MySQL: Lưu thông tin người dùng và dữ liệu CV.
+MySQL: Lưu thông tin người dùng, danh sách mẫu CV, dữ liệu CV và lịch sử hội thoại Chat AI trong bảng `chat_sessions`.
 
-HTML/CSS/JS: Giao diện và tương tác phía client.
+HTML/CSS/JS: Giao diện và tương tác phía client.
 
 #### 4.3. Luồng dữ liệu khi dùng form
 
@@ -209,55 +209,65 @@ Chuyển hướng sang trang preview.
 
 ### 6. THIẾT KẾ CƠ SỞ DỮ LIỆU
 
-#### 6.1. Bảng users
-
-sql
-
+#### 6.1. Bảng `users` (Quản lý tài khoản)
+```sql
 CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
-id INT AUTO_INCREMENT PRIMARY KEY,
+#### 6.2. Bảng `templates` (Quản lý mẫu CV)
+```sql
+CREATE TABLE templates (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    thumbnail VARCHAR(255) DEFAULT NULL,
+    description TEXT,
+    is_active TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
-email VARCHAR(255) NOT NULL UNIQUE,
-
-password VARCHAR(255) NOT NULL,
-
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-);
-
-#### 6.2. Bảng cvs
-
-sql
-
+#### 6.3. Bảng `cvs` (Lưu dữ liệu CV)
+```sql
 CREATE TABLE cvs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    template_id INT DEFAULT 1,
+    title VARCHAR(255) DEFAULT 'CV Chưa Đặt Tên',
+    data JSON NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (template_id) REFERENCES templates(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
-id INT AUTO_INCREMENT PRIMARY KEY,
+#### 6.4. Bảng `chat_sessions` (Lưu lịch sử & trạng thái hội thoại Chat AI)
+```sql
+CREATE TABLE chat_sessions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    cv_id INT DEFAULT NULL,
+    current_step VARCHAR(50) DEFAULT 'personal',
+    messages JSON NOT NULL,
+    status ENUM('in_progress', 'completed') DEFAULT 'in_progress',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (cv_id) REFERENCES cvs(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
-user_id INT NOT NULL,
+**Ghi chú thiết kế:**
+- Cột `data` trong bảng `cvs` lưu toàn bộ dữ liệu CV chi tiết dạng JSON để đảm bảo tính linh hoạt tối đa.
+- Bảng `templates` cho phép quản lý mẫu CV động thay vì hardcode trong frontend.
+- Bảng `chat_sessions` cho phép lưu vết hội thoại AI, giúp người dùng không bị mất dữ liệu khi lỡ reload trang hoặc bị hết hạn session.
 
-title VARCHAR(255),
-
-data JSON NOT NULL,
-
-template_id INT DEFAULT 1,
-
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-
-);
-
-**Ghi chú:**
-
-Cột data lưu toàn bộ dữ liệu CV dạng JSON để linh hoạt.
-
-template_id lưu mẫu CV đã chọn (1, 2, 3).
-
-Mỗi người dùng có thể có nhiều CV.
-
-#### 6.3. Định dạng JSON CV
+#### 6.5. Định dạng JSON CV
 
 json
 
@@ -472,44 +482,29 @@ Endpoint: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-fl
 
 #### 10.2. Quản lý trạng thái hội thoại
 
-Trạng thái được lưu trong session ($_SESSION['chat_state']).
+Trạng thái hội thoại được lưu trữ bền vững trong bảng **`chat_sessions`** của Database (và đồng bộ tạm trong `$_SESSION['chat_state']` để tối ưu tốc độ).
 
-Cấu trúc:
+Cấu trúc lưu trữ dữ liệu phiên chat:
 
-php
-
-$_SESSION['chat_state'] = [
-
-'current_step' => 'personal', // 'personal', 'education', 'skills', 'experience', 'projects', 'objective', 'done'
-
-'collected_data' => [
-
-'personal' => [],
-
-'education' => [],
-
-'skills' => [],
-
-'experience' => [],
-
-'projects' => [],
-
-'objective' => ''
-
-],
-
-'conversation' => [
-
-// mảng các tin nhắn
-
-```text
-['role' => 'assistant', 'content' => '...'],
-['role' => 'user', 'content' => '...']
+```json
+{
+  "current_step": "personal",
+  "collected_data": {
+    "personal": {},
+    "education": [],
+    "skills": [],
+    "experience": [],
+    "projects": [],
+    "objective": ""
+  },
+  "conversation": [
+    {"role": "assistant", "content": "..."},
+    {"role": "user", "content": "..."}
+  ]
+}
 ```
 
-]
-
-];
+PHP cập nhật `current_step` và ghi chú tin nhắn mới vào DB sau mỗi lượt trao đổi, giúp giữ nguyên vết hội thoại kể cả khi người dùng làm mới trang hoặc bị gián đoạn mạng.
 
 PHP cập nhật current_step sau mỗi bước, dựa trên phản hồi AI hoặc logic riêng.
 
