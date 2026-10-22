@@ -7,6 +7,7 @@ require_once __DIR__ . '/../includes/auth.php';
 redirectAuthenticatedUser();
 
 $error = null;
+$flash = getFlashMessage();
 $fullName = '';
 $email = '';
 
@@ -31,22 +32,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($statement->fetch()) {
             $error = 'Email này đã được sử dụng.';
         } else {
-            $statement = $pdo->prepare(
-                'INSERT INTO users (full_name, email, password) VALUES (:full_name, :email, :password)'
-            );
-            $statement->execute([
-                'full_name' => $fullName,
-                'email' => $email,
-                'password' => password_hash($password, PASSWORD_DEFAULT),
-            ]);
+            try {
+                $statement = $pdo->prepare(
+                    'INSERT INTO users (full_name, email, password) VALUES (:full_name, :email, :password)'
+                );
+                $statement->execute([
+                    'full_name' => $fullName,
+                    'email' => $email,
+                    'password' => password_hash($password, PASSWORD_DEFAULT),
+                ]);
 
-            session_regenerate_id(true);
-            $_SESSION['user_id'] = (int) $pdo->lastInsertId();
-            $_SESSION['user_email'] = $email;
-            $_SESSION['user_full_name'] = $fullName;
+                session_regenerate_id(true);
+                $_SESSION['user_id'] = (int) $pdo->lastInsertId();
+                $_SESSION['user_email'] = $email;
+                $_SESSION['user_full_name'] = $fullName;
 
-            header('Location: dashboard.php');
-            exit;
+                setFlashMessage('success', 'Đăng ký thành công! Chào mừng bạn đến với CVAI.');
+                header('Location: dashboard.php');
+                exit;
+            } catch (PDOException $exception) {
+                if ($exception->getCode() === '23000') {
+                    $error = 'Email này đã được sử dụng. Vui lòng đăng nhập hoặc dùng email khác.';
+                } else {
+                    error_log('Register error: ' . $exception->getMessage());
+                    $error = 'Không thể tạo tài khoản lúc này. Vui lòng thử lại.';
+                }
+            }
         }
     }
 }
@@ -68,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <link rel="stylesheet" href="css/auth.css">
 
+    <link rel="stylesheet" href="css/app-consistent.css">
 </head>
 
 <body>
@@ -128,8 +140,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
 
+            <?php if ($flash !== null): ?>
+                <div class="notice notice-<?= htmlspecialchars($flash['type'], ENT_QUOTES, 'UTF-8') ?>" role="status"><?= htmlspecialchars($flash['message'], ENT_QUOTES, 'UTF-8') ?></div>
+            <?php endif; ?>
             <?php if ($error !== null): ?>
-                <p class="form-error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
+                <p class="form-error" role="alert"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
             <?php endif; ?>
 
             <form method="post" action="register.php">

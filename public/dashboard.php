@@ -1,4 +1,3 @@
-
 <?php
 
 require_once __DIR__ . '/../includes/db.php';
@@ -6,18 +5,36 @@ require_once __DIR__ . '/../includes/auth.php';
 
 requireLogin();
 
-$statement = $pdo->prepare('SELECT full_name, email FROM users WHERE id = :user_id LIMIT 1');
-$statement->execute(['user_id' => getCurrentUserId()]);
+$statement = $pdo->prepare(
+    'SELECT full_name, email 
+     FROM users 
+     WHERE id = :user_id 
+     LIMIT 1'
+);
+
+$statement->execute([
+    'user_id' => getCurrentUserId()
+]);
+
 $currentUser = $statement->fetch();
 
 if (!$currentUser) {
+
     $_SESSION = [];
+
     session_destroy();
+
     header('Location: login.php');
+
     exit;
 }
 
 $displayName = $currentUser['full_name'] ?: $currentUser['email'];
+$cvStmt = $pdo->prepare('SELECT c.id,c.title,c.template_id,c.updated_at,t.name AS template_name FROM cvs c LEFT JOIN templates t ON t.id=c.template_id WHERE c.user_id=? ORDER BY c.updated_at DESC');
+$cvStmt->execute([getCurrentUserId()]);
+$userCvs = $cvStmt->fetchAll();
+$flash = getFlashMessage();
+
 ?>
 
 <!DOCTYPE html>
@@ -39,6 +56,7 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
         href="css/dashboard.css"
     >
 
+    <link rel="stylesheet" href="css/app-consistent.css">
 </head>
 
 
@@ -54,7 +72,8 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
     <!-- LOGO -->
 
     <div class="logo">
-        ✦ CV<span>AI</span>
+        <a href="./home.html">✦ CV<span>AI</span></a>
+        
     </div>
 
 
@@ -67,7 +86,12 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
         </p>
 
 
-        <a href="#" class="menu-item active">
+        <!-- Dashboard -->
+
+        <a
+            href="dashboard.php"
+            class="menu-item active"
+        >
 
             <span class="icon">⌂</span>
 
@@ -76,7 +100,12 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
         </a>
 
 
-        <a href="#" class="menu-item">
+        <!-- CV của tôi -->
+
+        <a
+            href="dashboard.php#my-cvs"
+            class="menu-item"
+        >
 
             <span class="icon">▤</span>
 
@@ -85,7 +114,12 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
         </a>
 
 
-        <a href="#" class="menu-item">
+        <!-- Tạo CV AI -->
+
+        <a
+            href="create-cv-chat.php"
+            class="menu-item"
+        >
 
             <span class="icon">✦</span>
 
@@ -94,7 +128,12 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
         </a>
 
 
-        <a href="#" class="menu-item">
+        <!-- Mẫu CV -->
+
+        <a
+            href="cv-templates.php"
+            class="menu-item"
+        >
 
             <span class="icon">▣</span>
 
@@ -108,14 +147,18 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
         </p>
 
 
-        <a href="#" class="menu-item">
+        <!-- Tài khoản -->
+
+        <a
+            href="account.php"
+            class="menu-item"
+        >
 
             <span class="icon">♙</span>
 
             Tài khoản
 
         </a>
-
 
     </nav>
 
@@ -124,7 +167,10 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 
     <div class="sidebar-bottom">
 
-        <a href="logout.php" class="menu-item logout">
+        <a
+            href="logout.php"
+            class="menu-item logout"
+        >
 
             <span class="icon">↪</span>
 
@@ -144,6 +190,12 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 
 <main class="main">
 
+    <?php if ($flash !== null): ?>
+        <div class="notice notice-<?= htmlspecialchars($flash['type'], ENT_QUOTES, 'UTF-8') ?>" role="status">
+            <?= htmlspecialchars($flash['message'], ENT_QUOTES, 'UTF-8') ?>
+        </div>
+    <?php endif; ?>
+
 
     <!-- HEADER -->
 
@@ -157,26 +209,58 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
             </p>
 
             <h2>
+
                 Xin chào,
-                <span><?= htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8') ?></span> 👋
+
+                <span>
+                    <?= htmlspecialchars(
+                        $displayName,
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </span>
+
+                👋
+
             </h2>
 
         </div>
+
 
 
         <!-- USER -->
 
         <div class="user-profile">
 
+
             <div class="avatar">
-                A
+
+                <?= htmlspecialchars(
+                    strtoupper(
+                        mb_substr(
+                            $displayName,
+                            0,
+                            1,
+                            'UTF-8'
+                        )
+                    ),
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>
+
             </div>
 
 
             <div class="user-info">
 
                 <strong>
-                    <?= htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8') ?>
+
+                    <?= htmlspecialchars(
+                        $displayName,
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+
                 </strong>
 
                 <span>
@@ -186,7 +270,10 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
             </div>
 
 
-            <button class="dropdown">
+            <button
+                type="button"
+                class="dropdown"
+            >
                 ▼
             </button>
 
@@ -225,11 +312,14 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
             </div>
 
 
-            <button class="create-button">
+            <!-- NÚT TẠO CV -->
 
+            <a
+                href="create-cv-form.php"
+                class="create-button"
+            >
                 + Tạo CV mới
-
-            </button>
+            </a>
 
         </div>
 
@@ -254,6 +344,7 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 
                 <div class="create-card ai-card">
 
+
                     <div class="card-icon">
                         ✦
                     </div>
@@ -261,24 +352,32 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 
                     <div class="card-content">
 
+
                         <span class="card-label">
                             KHUYẾN NGHỊ
                         </span>
+
 
                         <h3>
                             Chat với AI
                         </h3>
 
+
                         <p>
+
                             Trò chuyện với AI để được
                             hướng dẫn và tạo nội dung CV
                             phù hợp với bạn.
+
                         </p>
 
 
-                        <a href="#">
+                        <a href="create-cv-chat.php">
+
                             Bắt đầu với AI
+
                             <span>→</span>
+
                         </a>
 
                     </div>
@@ -296,6 +395,7 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 
                 <div class="create-card form-card">
 
+
                     <div class="card-icon">
                         ✎
                     </div>
@@ -303,23 +403,33 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 
                     <div class="card-content">
 
+
                         <span class="card-label">
                             NHANH CHÓNG
                         </span>
+
 
                         <h3>
                             Tạo bằng Form
                         </h3>
 
+
                         <p>
+
                             Nhập trực tiếp thông tin cá nhân,
                             học vấn, kinh nghiệm và kỹ năng.
+
                         </p>
 
 
-                        <a href="#">
+                        <!-- ĐÃ SỬA LINK -->
+
+                        <a href="create-cv-form.php">
+
                             Tạo CV bằng Form
+
                             <span>→</span>
+
                         </a>
 
                     </div>
@@ -342,6 +452,7 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 
             <div class="section-heading">
 
+
                 <div>
 
                     <h2>
@@ -355,7 +466,7 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
                 </div>
 
 
-                <a href="#">
+                <a href="dashboard.php#my-cvs">
                     Xem tất cả →
                 </a>
 
@@ -363,186 +474,29 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 
 
 
-            <div class="cv-list">
-
-
-                <!-- CV 1 -->
-
-                <div class="cv-item">
-
-
-                    <div class="cv-preview">
-
-                        <div class="mini-cv">
-
-                            <div class="mini-top">
-
-                                <div></div>
-
-                                <span></span>
-
+            <div class="cv-list" id="my-cvs">
+                <?php if (!$userCvs): ?>
+                    <div class="cv-item" style="padding:28px;display:block;text-align:center">
+                        <h3>Bạn chưa có CV nào</h3>
+                        <p class="update">Chọn một mẫu CV hoặc tạo CV mới để bắt đầu.</p>
+                        <a class="create-button" href="cv-templates.php">Chọn mẫu CV</a>
+                    </div>
+                <?php else: foreach ($userCvs as $userCv): ?>
+                    <article class="cv-item">
+                        <div class="cv-preview"><div class="mini-cv"><div class="mini-top"><div></div><span></span></div><div class="mini-title"></div><div class="mini-line"></div><div class="mini-line short"></div><div class="mini-title second"></div><div class="mini-line"></div><div class="mini-line short"></div></div></div>
+                        <div class="cv-details">
+                            <div class="cv-name-row"><h3><?= htmlspecialchars($userCv['title'], ENT_QUOTES, 'UTF-8') ?></h3><span class="status">Đã lưu</span></div>
+                            <p class="update">Cập nhật: <?= htmlspecialchars(date('d/m/Y H:i', strtotime($userCv['updated_at'])), ENT_QUOTES, 'UTF-8') ?></p>
+                            <div class="template"><span>Mẫu</span><strong><?= htmlspecialchars($userCv['template_name'] ?? 'Modern', ENT_QUOTES, 'UTF-8') ?></strong></div>
+                            <div class="cv-actions">
+                                <a class="view" href="preview.php?id=<?= (int)$userCv['id'] ?>">◉ Xem</a>
+                                <a class="edit" href="edit-cv.php?id=<?= (int)$userCv['id'] ?>">✎ Sửa</a>
+                                <form method="post" action="../api/delete-cv.php" onsubmit="return confirm('Bạn có chắc muốn xóa CV này?')"><input type="hidden" name="id" value="<?= (int)$userCv['id'] ?>"><button type="submit" class="delete">♲ Xóa</button></form>
                             </div>
-
-
-                            <div class="mini-title"></div>
-
-                            <div class="mini-line"></div>
-
-                            <div class="mini-line short"></div>
-
-                            <div class="mini-title second"></div>
-
-                            <div class="mini-line"></div>
-
-                            <div class="mini-line short"></div>
-
                         </div>
-
-                    </div>
-
-
-                    <div class="cv-details">
-
-                        <div class="cv-name-row">
-
-                            <h3>
-                                CV Nguyễn Văn A
-                            </h3>
-
-                            <span class="status">
-                                Đang sử dụng
-                            </span>
-
-                        </div>
-
-
-                        <p class="update">
-                            Cập nhật: 09/09/2026
-                        </p>
-
-
-                        <div class="template">
-
-                            <span>
-                                Template
-                            </span>
-
-                            <strong>
-                                Modern
-                            </strong>
-
-                        </div>
-
-
-                        <div class="cv-actions">
-
-                            <button class="view">
-                                ◉ Xem
-                            </button>
-
-                            <button class="edit">
-                                ✎ Sửa
-                            </button>
-
-                            <button class="delete">
-                                ♲ Xóa
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- CV 2 -->
-
-                <div class="cv-item">
-
-
-                    <div class="cv-preview">
-
-                        <div class="mini-cv">
-
-                            <div class="mini-top">
-
-                                <div></div>
-
-                                <span></span>
-
-                            </div>
-
-
-                            <div class="mini-title"></div>
-
-                            <div class="mini-line"></div>
-
-                            <div class="mini-line short"></div>
-
-                            <div class="mini-title second"></div>
-
-                            <div class="mini-line"></div>
-
-                            <div class="mini-line short"></div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="cv-details">
-
-                        <div class="cv-name-row">
-
-                            <h3>
-                                CV Thực tập sinh Backend
-                            </h3>
-
-                        </div>
-
-
-                        <p class="update">
-                            Cập nhật: 05/09/2026
-                        </p>
-
-
-                        <div class="template">
-
-                            <span>
-                                Template
-                            </span>
-
-                            <strong>
-                                Professional
-                            </strong>
-
-                        </div>
-
-
-                        <div class="cv-actions">
-
-                            <button class="view">
-                                ◉ Xem
-                            </button>
-
-                            <button class="edit">
-                                ✎ Sửa
-                            </button>
-
-                            <button class="delete">
-                                ♲ Xóa
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
+                    </article>
+                <?php endforeach; endif; ?>
             </div>
-
         </section>
 
 
@@ -561,27 +515,38 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 
             <div>
 
+
                 <span>
                     ✦ AI ASSISTANT
                 </span>
 
+
                 <h2>
+
                     Không biết viết CV?
+
                     <br>
+
                     Để AI giúp bạn.
+
                 </h2>
 
+
                 <p>
+
                     Mô tả kinh nghiệm của bạn bằng
                     ngôn ngữ tự nhiên và để AI biến
                     chúng thành nội dung chuyên nghiệp.
+
                 </p>
 
             </div>
 
 
-            <a href="#">
+            <a href="create-cv-chat.php">
+
                 Chat với AI →
+
             </a>
 
 
@@ -589,7 +554,6 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 
 
     </section>
-
 
 </main>
 
@@ -601,7 +565,7 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 
 <script>
 
-    /* User dropdown */
+    // User dropdown
 
     const dropdown =
         document.querySelector(".dropdown");
@@ -610,14 +574,18 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
         document.querySelector(".user-profile");
 
 
-    dropdown.addEventListener("click", () => {
+    if (dropdown && profile) {
 
-        profile.classList.toggle("open");
+        dropdown.addEventListener("click", () => {
 
-    });
+            profile.classList.toggle("open");
+
+        });
+
+    }
 
 
-    /* Hover CV */
+    // Hover CV
 
     const cvItems =
         document.querySelectorAll(".cv-item");
@@ -625,18 +593,24 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 
     cvItems.forEach(item => {
 
-        item.addEventListener("mouseenter", () => {
+        item.addEventListener(
+            "mouseenter",
+            () => {
 
-            item.classList.add("hover");
+                item.classList.add("hover");
 
-        });
+            }
+        );
 
 
-        item.addEventListener("mouseleave", () => {
+        item.addEventListener(
+            "mouseleave",
+            () => {
 
-            item.classList.remove("hover");
+                item.classList.remove("hover");
 
-        });
+            }
+        );
 
     });
 
@@ -646,4 +620,3 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
 </body>
 
 </html>
-```
