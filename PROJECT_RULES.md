@@ -107,4 +107,11 @@ Dự án này là sản phẩm Đồ án 1 (Web App Tạo CV bằng Chat AI) đ�
 - Khi phải đưa ra giả định tạm thời vì chưa thể hỏi lại ngay, AI phải nêu rõ đó là giả định và không được xem giả định đó là yêu cầu chính thức của dự án.
 - Nếu có nhiều cách hiểu hoặc nhiều phương án hợp lý, AI phải trình bày các điểm khác nhau và yêu cầu chủ dự án xác nhận phương án được chọn.
 
+### 13. Quy tắc Kiểm tra Vi phạm Quy định Trước khi Thực hiện (Rule Compliance Check)
+- Trước khi thực hiện bất kỳ yêu cầu, đề xuất hoặc hành động nào do chủ dự án đưa ra, hoặc bất kỳ đề xuất, hướng dẫn hay hành động nào do AI chủ động cung cấp, AI phải đối chiếu với toàn bộ các quy tắc trong tài liệu này.
+- Nếu nhận thấy yêu cầu, đề xuất hoặc hành động đó có thể vi phạm hoặc dẫn đến vi phạm bất kỳ quy tắc nào, AI phải chủ động cảnh báo trước khi thực hiện.
+- Nội dung cảnh báo phải nêu rõ: quy tắc bị vi phạm hoặc có nguy cơ bị vi phạm, lý do vi phạm, phần thay đổi/hành động gây ra vi phạm và hậu quả có thể xảy ra.
+- AI không được âm thầm thực hiện một hành động đã phát hiện có nguy cơ vi phạm quy tắc. AI phải đề xuất phương án điều chỉnh phù hợp và chờ chủ dự án xác nhận trước khi tiếp tục.
+- Ví dụ: nếu một commit chứa quá nhiều nhóm thay đổi không liên quan, AI phải thông báo rằng việc tạo commit như vậy có thể vi phạm Quy tắc 7 về Commit Convention và cụ thể là mục nào , thay vì tự thực hiện mà không cảnh báo.
+
 ---
