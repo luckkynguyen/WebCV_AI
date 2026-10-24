@@ -407,6 +407,8 @@ $cvs = $cvStatement->fetchAll();
 
                                 <div class="cv-actions">
                                     <a class="view" href="preview.php?cv_id=<?= (int) $cv['id'] ?>">◉ Xem CV</a>
+                                    <a class="edit" href="edit-cv.php?cv_id=<?= (int) $cv['id'] ?>">✎ Sửa</a>
+                                    <button class="delete" type="button" data-delete-cv="<?= (int) $cv['id'] ?>">♲ Xóa</button>
                                 </div>
                             </div>
                         </div>
@@ -513,6 +515,37 @@ $cvs = $cvStatement->fetchAll();
 
 </script>
 
+
+<script>
+document.addEventListener('click', async event => {
+    const button = event.target.closest('[data-delete-cv]');
+    if (!button) {
+        return;
+    }
+
+    const cvId = Number(button.dataset.deleteCv);
+    if (!Number.isInteger(cvId) || !window.confirm('Bạn có chắc muốn xóa CV này không?')) {
+        return;
+    }
+
+    button.disabled = true;
+    try {
+        const response = await fetch('../api/delete-cv.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cv_id: cvId })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Không thể xóa CV.');
+        }
+        button.closest('.cv-item').remove();
+    } catch (error) {
+        button.disabled = false;
+        window.alert(error.message);
+    }
+});
+</script>
 
 </body>
 
