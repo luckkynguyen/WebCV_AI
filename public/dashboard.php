@@ -18,6 +18,17 @@ if (!$currentUser) {
 }
 
 $displayName = $currentUser['full_name'] ?: $currentUser['email'];
+
+$cvStatement = $pdo->prepare(
+    'SELECT cvs.id, cvs.title, cvs.updated_at, templates.name AS template_name
+     FROM cvs
+     LEFT JOIN templates ON templates.id = cvs.template_id
+     WHERE cvs.user_id = :user_id
+     ORDER BY cvs.updated_at DESC, cvs.id DESC
+     LIMIT 10'
+);
+$cvStatement->execute(['user_id' => getCurrentUserId()]);
+$cvs = $cvStatement->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -225,11 +236,9 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
             </div>
 
 
-            <button class="create-button">
-
+            <a class="create-button" href="create-cv-form.php">
                 + Tạo CV mới
-
-            </button>
+            </a>
 
         </div>
 
@@ -317,7 +326,7 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
                         </p>
 
 
-                        <a href="#">
+                        <a href="create-cv-form.php">
                             Tạo CV bằng Form
                             <span>→</span>
                         </a>
@@ -355,192 +364,54 @@ $displayName = $currentUser['full_name'] ?: $currentUser['email'];
                 </div>
 
 
-                <a href="#">
-                    Xem tất cả →
-                </a>
+                <span><?= count($cvs) ?> CV</span>
 
             </div>
 
 
 
             <div class="cv-list">
-
-
-                <!-- CV 1 -->
-
-                <div class="cv-item">
-
-
-                    <div class="cv-preview">
-
-                        <div class="mini-cv">
-
-                            <div class="mini-top">
-
-                                <div></div>
-
-                                <span></span>
-
+                <?php if ($cvs === []): ?>
+                    <p>Chưa có CV nào. Hãy tạo CV đầu tiên bằng form.</p>
+                <?php else: ?>
+                    <?php foreach ($cvs as $cv): ?>
+                        <div class="cv-item">
+                            <div class="cv-preview">
+                                <div class="mini-cv">
+                                    <div class="mini-top">
+                                        <div></div>
+                                        <span></span>
+                                    </div>
+                                    <div class="mini-title"></div>
+                                    <div class="mini-line"></div>
+                                    <div class="mini-line short"></div>
+                                    <div class="mini-title second"></div>
+                                    <div class="mini-line"></div>
+                                    <div class="mini-line short"></div>
+                                </div>
                             </div>
 
+                            <div class="cv-details">
+                                <div class="cv-name-row">
+                                    <h3><?= htmlspecialchars($cv['title'], ENT_QUOTES, 'UTF-8') ?></h3>
+                                </div>
 
-                            <div class="mini-title"></div>
+                                <p class="update">
+                                    Cập nhật: <?= htmlspecialchars(date('d/m/Y H:i', strtotime($cv['updated_at'])), ENT_QUOTES, 'UTF-8') ?>
+                                </p>
 
-                            <div class="mini-line"></div>
+                                <div class="template">
+                                    <span>Template</span>
+                                    <strong><?= htmlspecialchars($cv['template_name'] ?: 'Không xác định', ENT_QUOTES, 'UTF-8') ?></strong>
+                                </div>
 
-                            <div class="mini-line short"></div>
-
-                            <div class="mini-title second"></div>
-
-                            <div class="mini-line"></div>
-
-                            <div class="mini-line short"></div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="cv-details">
-
-                        <div class="cv-name-row">
-
-                            <h3>
-                                CV Nguyễn Văn A
-                            </h3>
-
-                            <span class="status">
-                                Đang sử dụng
-                            </span>
-
-                        </div>
-
-
-                        <p class="update">
-                            Cập nhật: 09/09/2026
-                        </p>
-
-
-                        <div class="template">
-
-                            <span>
-                                Template
-                            </span>
-
-                            <strong>
-                                Modern
-                            </strong>
-
-                        </div>
-
-
-                        <div class="cv-actions">
-
-                            <button class="view">
-                                ◉ Xem
-                            </button>
-
-                            <button class="edit">
-                                ✎ Sửa
-                            </button>
-
-                            <button class="delete">
-                                ♲ Xóa
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- CV 2 -->
-
-                <div class="cv-item">
-
-
-                    <div class="cv-preview">
-
-                        <div class="mini-cv">
-
-                            <div class="mini-top">
-
-                                <div></div>
-
-                                <span></span>
-
+                                <div class="cv-actions">
+                                    <a class="view" href="preview.php?cv_id=<?= (int) $cv['id'] ?>">◉ Xem CV</a>
+                                </div>
                             </div>
-
-
-                            <div class="mini-title"></div>
-
-                            <div class="mini-line"></div>
-
-                            <div class="mini-line short"></div>
-
-                            <div class="mini-title second"></div>
-
-                            <div class="mini-line"></div>
-
-                            <div class="mini-line short"></div>
-
                         </div>
-
-                    </div>
-
-
-                    <div class="cv-details">
-
-                        <div class="cv-name-row">
-
-                            <h3>
-                                CV Thực tập sinh Backend
-                            </h3>
-
-                        </div>
-
-
-                        <p class="update">
-                            Cập nhật: 05/09/2026
-                        </p>
-
-
-                        <div class="template">
-
-                            <span>
-                                Template
-                            </span>
-
-                            <strong>
-                                Professional
-                            </strong>
-
-                        </div>
-
-
-                        <div class="cv-actions">
-
-                            <button class="view">
-                                ◉ Xem
-                            </button>
-
-                            <button class="edit">
-                                ✎ Sửa
-                            </button>
-
-                            <button class="delete">
-                                ♲ Xóa
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
 
         </section>

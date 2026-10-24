@@ -959,9 +959,12 @@ a {
 }
 
 
-.cv-actions button {
+.cv-actions button,
+.cv-actions a {
 
     border: none;
+
+    display: inline-block;
 
     padding: 8px 14px;
 
@@ -984,6 +987,12 @@ a {
 
 }
 
+.cv-actions a {
+
+    text-decoration: none;
+
+}
+
 
 .edit {
 
@@ -1003,7 +1012,8 @@ a {
 }
 
 
-.cv-actions button:hover {
+.cv-actions button:hover,
+.cv-actions a:hover {
 
     transform: translateY(-2px);
 
@@ -1271,4 +1281,3 @@ a {
     }
 
 }
-
