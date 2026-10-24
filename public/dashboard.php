@@ -285,7 +285,7 @@ $cvs = $cvStatement->fetchAll();
                         </p>
 
 
-                        <a href="#">
+                        <a href="create-cv-chat.php">
                             Bắt đầu với AI
                             <span>→</span>
                         </a>
@@ -453,7 +453,7 @@ $cvs = $cvStatement->fetchAll();
             </div>
 
 
-            <a href="#">
+            <a href="create-cv-chat.php">
                 Chat với AI →
             </a>
 

@@ -564,7 +564,7 @@ Endpoint: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-fl
 
 #### 10.2. Quản lý trạng thái hội thoại
 
-Trạng thái hội thoại được lưu trữ bền vững trong bảng **`chat_sessions`** của Database (và đồng bộ tạm trong `$_SESSION['chat_state']` để tối ưu tốc độ).
+Trong MVP tuần 7–8, trạng thái hội thoại được lưu trong `$_SESSION['cv_chat']`. Bảng **`chat_sessions`** được giữ cho giai đoạn mở rộng khi cần lưu lịch sử bền vững.
 
 Cấu trúc lưu trữ dữ liệu phiên chat:
 

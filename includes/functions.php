@@ -93,3 +93,103 @@ function validateCvData(mixed $data): array
 
     return $errors;
 }
+
+function geminiGenerateContent(string $prompt): string
+{
+    if (GEMINI_API_KEY === '' || GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') {
+        throw new RuntimeException('Gemini API key chưa được cấu hình.');
+    }
+
+    $separator = str_contains(GEMINI_API_URL, '?') ? '&' : '?';
+    $url = GEMINI_API_URL . $separator . 'key=' . rawurlencode(GEMINI_API_KEY);
+    $payload = json_encode([
+        'contents' => [
+            [
+                'role' => 'user',
+                'parts' => [['text' => $prompt]],
+            ],
+        ],
+        'generationConfig' => [
+            'temperature' => 0.2,
+            'responseMimeType' => 'application/json',
+        ],
+    ], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+
+    $curl = curl_init($url);
+    if ($curl === false) {
+        throw new RuntimeException('Không thể khởi tạo kết nối Gemini.');
+    }
+
+    curl_setopt_array($curl, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+        CURLOPT_POSTFIELDS => $payload,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT => 30,
+    ]);
+
+    $response = curl_exec($curl);
+    $curlError = curl_error($curl);
+    $statusCode = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+    curl_close($curl);
+
+    if ($response === false || $curlError !== '') {
+        throw new RuntimeException('Không thể kết nối Gemini.');
+    }
+
+    if ($statusCode < 200 || $statusCode >= 300) {
+        throw new RuntimeException('Gemini trả về lỗi HTTP ' . $statusCode . '.');
+    }
+
+    try {
+        $decoded = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException) {
+        throw new RuntimeException('Gemini trả về response không hợp lệ.');
+    }
+
+    $text = $decoded['candidates'][0]['content']['parts'][0]['text'] ?? null;
+    if (!is_string($text) || trim($text) === '') {
+        throw new RuntimeException('Gemini không trả về nội dung.');
+    }
+
+    return $text;
+}
+
+function decodeGeminiJson(string $text): array
+{
+    $text = trim($text);
+    if (str_starts_with($text, '```')) {
+        $text = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', $text) ?? $text;
+    }
+
+    try {
+        $decoded = json_decode(trim($text), true, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException) {
+        throw new RuntimeException('Gemini không trả về JSON đúng định dạng.');
+    }
+
+    if (!is_array($decoded)) {
+        throw new RuntimeException('Gemini JSON phải là object.');
+    }
+
+    return $decoded;
+}
+
+function createEmptyCvChatState(): array
+{
+    return [
+        'current_step' => 'personal_name',
+        'collected_data' => [
+            'personal' => [],
+            'objective' => '',
+            'education' => [],
+            'skills' => [],
+            'experience' => [],
+            'projects' => [],
+            'certificates' => [],
+        ],
+        'messages' => [],
+        'is_complete' => false,
+    ];
+}
