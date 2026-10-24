@@ -865,6 +865,13 @@ Viết README với đầy đủ các bước trên để giảng viên có th�
 
 Dự án “Web App Tạo CV bằng Chat AI” là một đồ án khả thi trong khuôn khổ môn học. Với sự kết hợp giữa form truyền thống và chat AI, nhóm có thể linh hoạt trong quá trình phát triển, đảm bảo luôn có sản phẩm hoàn chỉnh ngay cả khi phần AI gặp khó khăn. Kiến trúc PHP controller + AI language brain là điểm nhấn giúp nhóm dễ dàng bảo vệ trước hội đồng.
 
+### GHI CHÚ PHỐI HỢP NHÓM (TẠM THỜI)
+
+- Nhóm có 2 thành viên: một người phụ trách chính các phần BE, một người phụ trách chính các phần FE; các phần giao thoa sẽ phối hợp cùng làm.
+- Khi bắt đầu mỗi tuần, cần phân việc cho cả hai thành viên. Nếu nhiệm vụ của tuần chỉ tập trung vào một phía, thành viên còn lại có thể làm trước các công việc của tuần sau hoặc công việc hỗ trợ, miễn là không gây xung đột khi tích hợp.
+- Hai thành viên dùng chung database schema nhưng không bắt buộc dùng chung dữ liệu. Dữ liệu hiện tại chỉ phục vụ kiểm thử riêng; trước khi hoàn thiện và nộp dự án sẽ chuẩn bị dữ liệu fake phù hợp.
+- Đây là ghi chú phục vụ giai đoạn phát triển, cần rà soát và xóa trước khi hoàn thiện/nộp dự án.
+
 **PHỤ LỤC (TÙY CHỌN)**
 
 **Gợi ý template CV đơn giản**
