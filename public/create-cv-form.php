@@ -109,6 +109,6 @@ requireLogin();
         <p id="form-message" role="alert"></p>
         <button type="submit" class="submit">Lưu CV</button>
     </form>
-    <script src="js/form.js?v=2"></script>
+    <script src="js/form.js?v=3"></script>
 </body>
 </html>

@@ -1,5 +1,11 @@
 const form = document.querySelector('#cv-form');
 const message = document.querySelector('#form-message');
+const formConfig = window.cvFormConfig || {
+    endpoint: '../api/save-cv.php',
+    successRedirect: 'dashboard.php',
+    cvId: null,
+    initial: null
+};
 
 const fieldDefinitions = {
     education: [
@@ -50,6 +56,49 @@ function addEntry(type) {
         return `<label>${label}${required ? ' *' : ''}</label>${input}`;
     }).join('') + '<button type="button" class="remove">Xóa</button>';
     document.getElementById(containers[type]).appendChild(entry);
+}
+
+function addObjectEntry(type, values = {}) {
+    addEntry(type);
+    const containerName = type === 'project' ? 'projects' : `${type}s`;
+    const entry = document.querySelector(`#${containerName}-list .entry:last-child`);
+    Object.entries(values).forEach(([name, value]) => {
+        const input = entry.querySelector(`.${name}`);
+        if (!input) {
+            return;
+        }
+        input.value = Array.isArray(value) ? value.join(', ') : value;
+    });
+}
+
+function populateForm(initial) {
+    if (!initial || !initial.data) {
+        return;
+    }
+
+    const data = initial.data;
+    const personal = data.personal || {};
+    document.querySelector('#title').value = initial.title || 'CV của tôi';
+    document.querySelector('#template_id').value = String(initial.template_id || 1);
+    document.querySelector('#full_name').value = personal.full_name || '';
+    document.querySelector('#email').value = personal.email || '';
+    document.querySelector('#phone').value = personal.phone || '';
+    document.querySelector('#address').value = personal.address || '';
+    document.querySelector('#objective').value = data.objective || '';
+
+    document.querySelector('#skills-list').innerHTML = '';
+    (data.skills || []).forEach(skill => {
+        const entry = document.createElement('div');
+        entry.className = 'entry skill-entry';
+        entry.innerHTML = '<input class="skill" placeholder="Ví dụ: PHP"><button type="button" class="remove">Xóa</button>';
+        entry.querySelector('.skill').value = skill;
+        document.querySelector('#skills-list').appendChild(entry);
+    });
+
+    (data.education || []).forEach(item => addObjectEntry('education', item));
+    (data.experience || []).forEach(item => addObjectEntry('experience', item));
+    (data.projects || []).forEach(item => addObjectEntry('project', item));
+    (data.certificates || []).forEach(item => addObjectEntry('certificate', item));
 }
 
 form.addEventListener('click', event => {
@@ -107,14 +156,19 @@ form.addEventListener('submit', async event => {
     };
 
     try {
-        const response = await fetch('../api/save-cv.php', {
+        const payload = {
+            title: getValue('#title'),
+            template_id: Number(getValue('#template_id')),
+            data
+        };
+        if (formConfig.cvId !== null) {
+            payload.cv_id = formConfig.cvId;
+        }
+
+        const response = await fetch(formConfig.endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                title: getValue('#title'),
-                template_id: Number(getValue('#template_id')),
-                data
-            })
+            body: JSON.stringify(payload)
         });
         const result = await response.json();
 
@@ -123,11 +177,16 @@ form.addEventListener('submit', async event => {
             throw new Error(`${result.message || 'Không thể lưu CV.'}${errors}`);
         }
 
-        message.textContent = `${result.message} Mã CV: ${result.data.cv_id}`;
+        message.textContent = result.message;
         message.style.color = 'green';
-        window.location.href = 'dashboard.php';
+        window.location.href = formConfig.successRedirect.replace(
+            ':id',
+            String(result.data.cv_id)
+        );
     } catch (error) {
         message.textContent = error.message;
         message.style.color = 'crimson';
     }
 });
+
+populateForm(formConfig.initial);
