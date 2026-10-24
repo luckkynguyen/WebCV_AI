@@ -267,7 +267,87 @@ CREATE TABLE chat_sessions (
 - Bảng `templates` cho phép quản lý mẫu CV động thay vì hardcode trong frontend.
 - Bảng `chat_sessions` cho phép lưu vết hội thoại AI, giúp người dùng không bị mất dữ liệu khi lỡ reload trang hoặc bị hết hạn session.
 
-#### 6.5. Định dạng JSON CV
+#### 6.5. Định dạng JSON CV chính thức
+
+Schema JSON dưới đây là hợp đồng dữ liệu dùng chung cho form/JavaScript,
+API PHP, database, template và Gemini AI:
+
+```json
+{
+  "personal": {
+    "full_name": "",
+    "email": "",
+    "phone": "",
+    "address": ""
+  },
+  "objective": "",
+  "education": [
+    {
+      "school": "",
+      "major": "",
+      "period": "",
+      "gpa": ""
+    }
+  ],
+  "skills": [],
+  "experience": [
+    {
+      "company": "",
+      "position": "",
+      "period": "",
+      "description": ""
+    }
+  ],
+  "projects": [
+    {
+      "name": "",
+      "description": "",
+      "tech_stack": []
+    }
+  ],
+  "certificates": [
+    {
+      "name": "",
+      "organization": "",
+      "year": ""
+    }
+  ]
+}
+```
+
+Quy tắc validation tối thiểu:
+
+- `personal.full_name` bắt buộc và không rỗng.
+- `personal.email` bắt buộc và phải đúng định dạng email.
+- `skills` bắt buộc là mảng và phải có ít nhất một phần tử.
+- `phone`, `address`, `objective`, `education`, `experience`, `projects` và
+  `certificates` có thể để trống.
+- `education`, `experience`, `projects` và `certificates` là mảng object.
+- `projects[].tech_stack` là mảng chuỗi.
+- `title` và `template_id` là metadata của bản ghi `cvs`, nằm ngoài `data`.
+
+Ví dụ payload gửi đến `api/save-cv.php`:
+
+```json
+{
+  "title": "CV Nguyễn Văn A - Backend Developer",
+  "template_id": 1,
+  "data": {
+    "personal": {
+      "full_name": "Nguyễn Văn A",
+      "email": "testuser@gmail.com",
+      "phone": "0987654321",
+      "address": "Cần Thơ"
+    },
+    "objective": "Mong muốn trở thành lập trình viên Backend PHP chuyên nghiệp.",
+    "education": [],
+    "skills": ["PHP", "MySQL", "Git"],
+    "experience": [],
+    "projects": [],
+    "certificates": []
+  }
+}
+```
 
 json
 
@@ -390,7 +470,9 @@ Khi submit, JS gửi AJAX đến api/save-cv.php với dữ liệu JSON.
 
 PHP lưu vào DB và trả về cv_id.
 
-Chuyển hướng sang preview.php?cv_id=<id>.
+Sau khi lưu thành công, chuyển hướng về dashboard.php để hiển thị CV vừa lưu trong danh sách của người dùng.
+
+Từ dashboard, người dùng chọn "Xem CV" để mở preview.php?cv_id=<id>. Trang preview hiển thị dữ liệu CV đã lưu và nút "In / Lưu PDF" dùng hộp thoại in của trình duyệt.
 
 #### 8.3. Tạo CV bằng chat AI
 
