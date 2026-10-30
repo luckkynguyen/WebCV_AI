@@ -1,4 +1,5 @@
 <?php
+<<<<<<< Updated upstream
 
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
@@ -41,3 +42,20 @@ try {
 }
 
 jsonResponse(true, 'Tải CV thành công.', ['cv' => $cv]);
+=======
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+requireLogin();
+header('Content-Type: application/json; charset=utf-8');
+
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$id) { http_response_code(400); echo json_encode(['success'=>false,'message'=>'Thiếu id CV'], JSON_UNESCAPED_UNICODE); exit; }
+
+$stmt = $pdo->prepare('SELECT c.id,c.title,c.template_id,c.data,c.created_at,c.updated_at,t.name AS template_name FROM cvs c LEFT JOIN templates t ON t.id=c.template_id WHERE c.id=? AND c.user_id=? LIMIT 1');
+$stmt->execute([$id, getCurrentUserId()]);
+$cv = $stmt->fetch();
+if (!$cv) { http_response_code(404); echo json_encode(['success'=>false,'message'=>'Không tìm thấy CV'], JSON_UNESCAPED_UNICODE); exit; }
+
+$cv['data'] = json_decode($cv['data'], true) ?: [];
+echo json_encode(['success'=>true,'cv'=>$cv], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+>>>>>>> Stashed changes

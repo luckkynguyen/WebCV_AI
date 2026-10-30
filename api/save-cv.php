@@ -1,4 +1,5 @@
 <?php
+<<<<<<< Updated upstream
 
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
@@ -66,3 +67,51 @@ $statement->execute([
 jsonResponse(true, 'Lưu CV thành công.', [
     'cv_id' => (int) $pdo->lastInsertId(),
 ]);
+=======
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+requireLogin();
+header('Content-Type: application/json; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405); echo json_encode(['success'=>false,'message'=>'Chỉ hỗ trợ POST'], JSON_UNESCAPED_UNICODE); exit;
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+if (!is_array($input)) { http_response_code(400); echo json_encode(['success'=>false,'message'=>'Dữ liệu JSON không hợp lệ'], JSON_UNESCAPED_UNICODE); exit; }
+
+$title = trim((string)($input['title'] ?? 'CV mới'));
+$templateId = (int)($input['template_id'] ?? 1);
+$id = isset($input['id']) && $input['id'] !== '' ? (int)$input['id'] : null;
+$data = $input['data'] ?? [];
+
+if ($title === '') { http_response_code(422); echo json_encode(['success'=>false,'message'=>'Tên CV không được để trống'], JSON_UNESCAPED_UNICODE); exit; }
+if (!is_array($data)) { http_response_code(422); echo json_encode(['success'=>false,'message'=>'data phải là object JSON'], JSON_UNESCAPED_UNICODE); exit; }
+
+// Chuẩn hóa các mảng động.
+foreach (['education','skills','experience','projects','languages'] as $key) {
+    if (!isset($data[$key]) || !is_array($data[$key])) $data[$key] = [];
+}
+if (!isset($data['personal']) || !is_array($data['personal'])) $data['personal'] = [];
+
+$json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+$userId = getCurrentUserId();
+
+try {
+    if ($id) {
+        $check = $pdo->prepare('SELECT id FROM cvs WHERE id=? AND user_id=? LIMIT 1');
+        $check->execute([$id, $userId]);
+        if (!$check->fetch()) { http_response_code(404); echo json_encode(['success'=>false,'message'=>'CV không tồn tại hoặc không thuộc tài khoản này'], JSON_UNESCAPED_UNICODE); exit; }
+        $stmt = $pdo->prepare('UPDATE cvs SET title=?, template_id=?, data=? WHERE id=? AND user_id=?');
+        $stmt->execute([$title, $templateId, $json, $id, $userId]);
+    } else {
+        $stmt = $pdo->prepare('INSERT INTO cvs (user_id, template_id, title, data) VALUES (?,?,?,?)');
+        $stmt->execute([$userId, $templateId, $title, $json]);
+        $id = (int)$pdo->lastInsertId();
+    }
+    echo json_encode(['success'=>true,'message'=>'Đã lưu CV','id'=>$id,'redirect'=>'preview.php?id='.$id], JSON_UNESCAPED_UNICODE);
+} catch (Throwable $e) {
+    error_log('save-cv.php: '.$e->getMessage());
+    http_response_code(500); echo json_encode(['success'=>false,'message'=>'Không thể lưu CV. Kiểm tra kết nối cơ sở dữ liệu.'], JSON_UNESCAPED_UNICODE);
+}
+>>>>>>> Stashed changes

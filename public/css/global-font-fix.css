@@ -1,0 +1,170 @@
+/* Global Vietnamese typography repair for every public page. */
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+:root {
+  --cvai-font-sans: "Be Vietnam Pro", "Noto Sans", "Segoe UI", Arial, sans-serif;
+  --cvai-font-display: "Noto Serif", Georgia, "Times New Roman", serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--cvai-font-sans) !important;
+}
+
+button, input, select, textarea {
+  font-kerning: normal;
+}
+
+body {
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+/* Noto Serif keeps the existing elegant serif heading style, with Vietnamese glyph coverage. */
+h1, h2, h3, h4, h5, h6,
+.display-title,
+.auth-intro h1,
+.section-content h2,
+.section-title-center h2,
+.cta h2,
+.page-title h1,
+.cv-info h3 {
+  font-family: var(--cvai-font-display) !important;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+}
+
+/* Give Vietnamese tone marks enough vertical room on every page. */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.38;
+  overflow: visible;
+}
+
+.hero h1,
+.hero-title,
+.home h1,
+.home h1 span,
+.auth-intro h1,
+.auth-intro h1 span,
+.page-title h1,
+.main-title,
+.section-title h1,
+.section-content h2,
+.section-title-center h2,
+.cta h2 {
+  line-height: 1.38 !important;
+  padding-top: .08em;
+  padding-bottom: .12em;
+  overflow: visible !important;
+}
+
+.home h1 span,
+.auth-intro h1 span {
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+[lang="vi"], :lang(vi) {
+  font-feature-settings: "kern" 1;
+}
+
+input, textarea, select, button {
+  line-height: 1.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* ==========================================
+   FINAL FIX - VIETNAMESE TEXT CLIPPING
+   ========================================== */
+
+/* Trang chủ */
+.home .home-content {
+    overflow: visible !important;
+}
+
+.home .home-content h1 {
+    font-family: "Be Vietnam Pro", sans-serif !important;
+    font-size: clamp(36px, 5vw, 58px) !important;
+    font-weight: 500 !important;
+    line-height: 1.65 !important;
+    letter-spacing: 0 !important;
+    word-spacing: normal !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    padding: 12px 0 18px !important;
+    margin: 0 !important;
+}
+
+.home .home-content h1 span {
+    font-family: "Be Vietnam Pro", sans-serif !important;
+    font-style: italic !important;
+    display: inline-block !important;
+    line-height: 1.65 !important;
+    padding: 8px 0 12px !important;
+    overflow: visible !important;
+    vertical-align: middle !important;
+}
+
+/* Đảm bảo không cắt dấu tiếng Việt */
+.home,
+.home-content,
+.home-content h1 {
+    overflow: visible !important;
+}
+
+/* Trang đăng nhập - câu trích dẫn */
+.auth-intro .quote {
+    display: flex;
+    align-items: flex-start !important;
+    gap: 20px;
+    overflow: visible !important;
+}
+
+.auth-intro .quote p {
+    font-family: "Be Vietnam Pro", sans-serif !important;
+    font-size: 15px !important;
+    font-style: italic !important;
+    font-weight: 400 !important;
+    line-height: 1.9 !important;
+    letter-spacing: 0 !important;
+    padding: 6px 0 10px !important;
+    margin: 0 !important;
+    max-width: 350px;
+    overflow: visible !important;
+    white-space: normal !important;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .home .home-content h1 {
+        font-size: 36px !important;
+        line-height: 1.6 !important;
+    }
+
+    .auth-intro .quote p {
+        font-size: 14px !important;
+        line-height: 1.8 !important;
+    }
+}

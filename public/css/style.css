@@ -254,13 +254,16 @@ a {
 
 .home h1 {
 
-    font-family: Georgia, serif;
+    font-family: Georgia, 'Times New Roman', serif;
 
     font-size: 65px;
 
-    line-height: 1.08;
+    /* Extra vertical room prevents Vietnamese diacritics from colliding between lines. */
+    line-height: 1.24;
 
     font-weight: normal;
+    font-kerning: normal;
+    overflow: visible;
 
 }
 
@@ -269,7 +272,11 @@ a {
 
     color: #b99467;
 
+    font-family: Georgia, 'Times New Roman', serif;
     font-style: italic;
+    line-height: 1.24;
+    padding-top: 0.025em;
+    padding-bottom: 0.04em;
 
 }
 

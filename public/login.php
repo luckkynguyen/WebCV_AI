@@ -8,6 +8,10 @@ redirectAuthenticatedUser();
 
 $error = null;
 $email = '';
+$flash = getFlashMessage();
+$next = (string) ($_GET['next'] ?? $_POST['next'] ?? 'dashboard.php');
+$allowedNext = ['dashboard.php', 'create-cv-form.php', 'create-cv-chat.php', 'cv-templates.php', 'mau-cv.php'];
+if (!in_array($next, $allowedNext, true)) { $next = 'dashboard.php'; }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = strtolower(trim((string) ($_POST['email'] ?? '')));
@@ -27,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_id'] = (int) $user['id'];
             $_SESSION['user_email'] = $email;
 
-            header('Location: dashboard.php');
+            header('Location: ' . $next);
             exit;
         }
     }
@@ -44,6 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Đăng nhập - CVAI</title>
 
     <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/app-consistent.css">
+    <link rel="stylesheet" href="css/polish-effects.css?v=2">
+
+    <link rel="stylesheet" href="css/global-font-fix.css?v=2">
 </head>
 
 <body>
@@ -133,11 +141,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
 
+            <?php if ($flash !== null): ?>
+                <div class="notice notice-<?= htmlspecialchars($flash['type'], ENT_QUOTES, 'UTF-8') ?>" role="status"><?= htmlspecialchars($flash['message'], ENT_QUOTES, 'UTF-8') ?></div>
+            <?php endif; ?>
             <?php if ($error !== null): ?>
-                <p class="form-error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
+                <p class="form-error" role="alert"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
             <?php endif; ?>
 
             <form method="post" action="login.php">
+                <input type="hidden" name="next" value="<?= htmlspecialchars($next, ENT_QUOTES, 'UTF-8') ?>">
 
                 <!-- EMAIL -->
 

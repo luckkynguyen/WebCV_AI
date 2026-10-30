@@ -1,7 +1,7 @@
 {
-  " name\: \webcv-ai/app\,
- \description\: \Web App Tao CV bang Chat AI\,
- \require\: {
- \mpdf/mpdf\: \^8.1\
- }
+  "name": "webcv-ai/app",
+  "description": "AI-powered CV builder web application",
+  "require": {
+    "mpdf/mpdf": "^8.1"
+  }
 }

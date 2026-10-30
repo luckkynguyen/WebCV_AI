@@ -18,6 +18,8 @@ if (ini_get('session.use_cookies')) {
 }
 
 session_destroy();
+session_start();
+$_SESSION['flash_message'] = ['type' => 'success', 'message' => 'Bạn đã đăng xuất thành công.'];
 
 header('Location: login.php');
 exit;

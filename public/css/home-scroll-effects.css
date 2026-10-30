@@ -1,0 +1,100 @@
+/* =========================================
+   HIỆU ỨNG CUỘN TRANG HOME - CVAI
+   ========================================= */
+
+.home-scroll-item {
+    --scroll-x: 0px;
+    --scroll-y: 0px;
+    --scroll-scale: 1;
+    --scroll-opacity: 1;
+
+    opacity: var(--scroll-opacity);
+    transform: translate3d(var(--scroll-x), var(--scroll-y), 0) scale(var(--scroll-scale));
+    will-change: transform, opacity;
+}
+
+/* Hướng bay */
+.home-scroll-left {
+    --start-x: -180px;
+    --start-y: 0px;
+}
+
+.home-scroll-right {
+    --start-x: 180px;
+    --start-y: 0px;
+}
+
+.home-scroll-top {
+    --start-x: 0px;
+    --start-y: -150px;
+}
+
+.home-scroll-bottom {
+    --start-x: 0px;
+    --start-y: 150px;
+}
+
+.home-scroll-diagonal-left {
+    --start-x: -150px;
+    --start-y: 100px;
+}
+
+.home-scroll-diagonal-right {
+    --start-x: 150px;
+    --start-y: 100px;
+}
+
+/*
+ * TYPEWRITER AN TOÀN CHO TIẾNG VIỆT
+ *
+ * Không tách text thành từng span.
+ * Toàn bộ cụm chữ được reveal bằng clip-path nên dấu của:
+ * ă â ê ô ơ ư và các dấu sắc/huyền/hỏi/ngã/nặng luôn đi cùng chữ.
+ */
+.home-typewriter {
+    --type-progress: 0;
+    position: relative;
+    overflow: visible !important;
+    /* Extend the clipping box vertically so Vietnamese tone marks are never cut. */
+    clip-path: inset(-.24em calc((1 - var(--type-progress)) * 100%) -.28em 0);
+    -webkit-clip-path: inset(-.24em calc((1 - var(--type-progress)) * 100%) -.28em 0);
+    line-height: inherit !important;
+    font-kerning: normal;
+    font-variant-ligatures: common-ligatures;
+}
+
+/* Không cho chữ bị cắt bởi các wrapper của phần Home */
+.home,
+.home-content,
+.home h1,
+.home h1 span,
+.home .small-title,
+.section-title-center {
+    overflow: visible;
+}
+
+@media (max-width: 768px) {
+    .home-scroll-left,
+    .home-scroll-right,
+    .home-scroll-diagonal-left,
+    .home-scroll-diagonal-right {
+        --start-x: 80px;
+    }
+
+    .home-scroll-top,
+    .home-scroll-bottom {
+        --start-y: 80px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-scroll-item {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .home-typewriter {
+        clip-path: none !important;
+        -webkit-clip-path: none !important;
+    }
+}
